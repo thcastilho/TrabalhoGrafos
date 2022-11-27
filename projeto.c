@@ -66,7 +66,7 @@ int isEmpty(FILA *q);
 void printPath(GRAFO* g, int s, int v, int* pi);
 void breadthFirstSearch(GRAFO* g, int s);
 void buscaEmLargura();
-
+void dfsVisit(GRAFO* g, int u, int* cor, int* d, int* f, int* pi);
 void buscaEmProfundidade();
 
 
@@ -843,7 +843,7 @@ int isEmpty(FILA *q) {
 }
 
 void buscaEmProfundidade() {
-    FILE* fp = fopen("grafoBFS.txt", "r+");
+    FILE* fp = fopen("grafoDFS.txt", "r+");
 
     GRAFO g;
     fscanf(fp, "%d %d %c %d", &g.cabecalho.V, &g.cabecalho.E, &g.cabecalho.tipo, &g.cabecalho.peso);
@@ -854,5 +854,56 @@ void buscaEmProfundidade() {
 
     imprimeLista(&g);
 
+    depthFirstSearch(&g);
+
+    fclose(fp);
+
     return;
+}
+
+int tempo;
+void depthFirstSearch(GRAFO* g) {
+    int cor[g->cabecalho.V];
+    int d[g->cabecalho.V]; //instante da descoberta
+    int f[g->cabecalho.V]; //instante da finalizacao
+    int pi[g->cabecalho.V];
+
+    //inicializacao
+    int i;
+    for (i = 0; i < g->cabecalho.V; i++) {
+        cor[i] = BRANCA;
+        pi[i] = NIL;
+    }
+
+    tempo = 0;
+    for (i = 0; i < g->cabecalho.V; i++) {
+        if (cor[i] == BRANCA) {
+            dfsVisit(g, i, cor, d, f, pi);
+        }
+    }
+
+    printf("\n");
+    printf("VERTICE\t\t\tDESCOBERTA\t\tFINALIZACAO\n");
+    for(i = 0; i < g->cabecalho.V; i++) {
+        printf("%d\t\t\t%d\t\t\t%d\n", i, d[i], f[i]);
+    }
+}
+
+void dfsVisit(GRAFO* g, int u, int* cor, int* d, int* f, int* pi) {
+    cor[u] = CINZA;
+    tempo = tempo + 1;
+    d[u] = tempo;
+    
+    ADJ* list = g->listaAdj[u].head;
+    while(list) {
+        if (cor[list->vertice] == BRANCA) {
+            pi[list->vertice] == u;
+            dfsVisit(g, list->vertice, cor, d, f, pi);
+        }
+        list = list->next;
+    }
+
+    cor[u] = PRETA;
+    tempo = tempo + 1;
+    f[u] = tempo;
 }
