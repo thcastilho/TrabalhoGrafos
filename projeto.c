@@ -629,7 +629,7 @@ void algoritmoDePrim(GRAFO* g, int r) {
         pi[i] = NIL;
     }
 
-    printf("aaaaaaaa\n");
+    printf("\n");
 
     key[r] = 0;
     int contador = 0;
